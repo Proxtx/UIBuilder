@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <test-test name="test1.0" id="test"></test-test>
+    <script type="module">
+      import { loadComponent } from "./main.js";
+      await loadComponent({
+        template: "/testTemplate/index.html",
+        component: "/testTemplate/handler.js",
+        name: "test-test",
+        styles: ["/testTemplate/style.css"],
+      });
+
+      await new Promise((r) => setTimeout(r, 2000));
+
+      document.getElementById("test").component.test();
+    </script>
+  </body>
+</html>
