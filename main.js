@@ -34,3 +34,16 @@ export const loadComponent = async (options) => {
     }
   );
 };
+
+export const loadPack = async (options) => {
+  let pack = await (await fetch(options.pack)).json();
+  applyPack({ ...options, ...{ pack } });
+};
+
+export const applyPack = async (options) => {
+  let components = pack.components;
+  for (let i of Object.keys(components)) {
+    let component = components[i];
+    await loadComponent({ ...{ pack }, ...component });
+  }
+};
