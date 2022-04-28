@@ -41,7 +41,7 @@ export const loadPack = async (options) => {
 };
 
 export const applyPack = async (options) => {
-  let components = pack.components;
+  let components = options.pack.components;
   for (let i of Object.keys(components)) {
     let component = components[i];
     await loadComponent({ ...{ pack }, ...component });
