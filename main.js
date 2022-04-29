@@ -35,8 +35,8 @@ export const loadComponent = async (options) => {
   );
 };
 
-export const loadPack = async (options) => {
-  let pack = await (await fetch(options.pack)).json();
+export const loadPack = async (packUrl, options) => {
+  let pack = await (await fetch(packUrl)).json();
   applyPack({ ...options, ...{ pack } });
 };
 
@@ -44,6 +44,6 @@ export const applyPack = async (options) => {
   let components = options.pack.components;
   for (let i of Object.keys(components)) {
     let component = components[i];
-    await loadComponent({ ...{ pack }, ...component });
+    await loadComponent({ ...{ options }, ...component });
   }
 };

@@ -9,13 +9,20 @@
   <body>
     <test-test name="test1.0" id="test"></test-test>
     <script type="module">
-      import { loadComponent } from "./main.js";
+      import { loadComponent, loadPack } from "./main.js";
+      /*await loadComponent({
+        template: "/testTemplate2/index.html",
+        component: "/testTemplate2/handler.js",
+        name: "test-2",
+      });
       await loadComponent({
         template: "/testTemplate/index.html",
         component: "/testTemplate/handler.js",
         name: "test-test",
         styles: ["/testTemplate/style.css"],
-      });
+      });*/
+
+      await loadPack("pack.json");
 
       await new Promise((r) => setTimeout(r, 2000));
 
