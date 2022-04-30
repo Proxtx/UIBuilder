@@ -28,7 +28,13 @@ export const loadComponent = async (options) => {
             document,
           });
 
+          this.ready = true;
           this.component = component;
+          let event = new Event("ready", {
+            bubbles: false,
+            cancelable: false,
+          });
+          this.dispatchEvent(event);
         });
       }
     }
@@ -46,4 +52,9 @@ export const applyPack = async (options) => {
     let component = components[i];
     await loadComponent({ ...{ options }, ...component });
   }
+};
+
+export const ready = async (elem) => {
+  if (elem.ready) return;
+  await new Promise((r) => elem.addEventListener("ready", r));
 };
