@@ -4,6 +4,8 @@ export const loadComponent = async (options) => {
   customElements.define(
     options.name,
     class extends HTMLElement {
+      component;
+
       constructor() {
         super();
         let templateElement = document.createElement("template");
@@ -22,6 +24,7 @@ export const loadComponent = async (options) => {
           })();
 
         import(options.component).then((component) => {
+          this.component = component;
           component.handler.bind(this)({
             shadowDom: this.shadowRoot,
             component: this,
@@ -36,6 +39,11 @@ export const loadComponent = async (options) => {
           });
           this.dispatchEvent(event);
         });
+      }
+
+      attributeChangeCallback(name, oldValue, newValue) {
+        if (this.component && this.component.attributeChangeCallback)
+          this.component.attributeChangeCallback(name, oldValue, newValue);
       }
     }
   );
@@ -57,4 +65,11 @@ export const applyPack = async (options) => {
 export const ready = async (elem) => {
   if (elem.ready) return;
   await new Promise((r) => elem.addEventListener("ready", r));
+};
+
+window.uiBuilder = {
+  ready,
+  applyPack,
+  loadPack,
+  loadComponent,
 };
