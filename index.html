@@ -7,7 +7,11 @@
     <title>Document</title>
   </head>
   <body>
-    <test-test name="test1.0" id="test"><a>ups</a></test-test>
+    <test-test name="test1.0" id="test"
+      ><a style="color: green"
+        >this text should appear in the slot</a
+      ></test-test
+    >
     <script type="module">
       import { loadPack, ready } from "./main.js";
       await loadPack("pack.json");
@@ -15,6 +19,9 @@
       let test = document.getElementById("test");
       await ready(test);
       test.component.test();
+      test.addEventListener("click", () => {
+        console.log("click event bubbled");
+      });
     </script>
     <script type="module"></script>
   </body>

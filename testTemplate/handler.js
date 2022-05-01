@@ -4,5 +4,5 @@ export const handler = function ({ shadowDom }) {
 };
 
 export const test = () => {
-  alert("wow");
+  console.log("test1 test function has been executed");
 };

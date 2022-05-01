@@ -1,3 +1,3 @@
 export const handler = () => {
-  alert("wow 2");
+  console.log("test2 loaded");
 };
