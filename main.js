@@ -17,9 +17,11 @@ export const loadComponent = async (options) => {
         if (options.styles)
           (async () => {
             for (let i of options.styles) {
-              let style = document.createElement("style");
-              style.textContent = await (await fetch(i)).text();
-              this.shadowRoot.appendChild(style);
+              let link = document.createElement("link");
+              link.type = "text/css";
+              link.rel = "stylesheet";
+              link.href = i;
+              this.shadowRoot.appendChild(link);
             }
           })();
 
