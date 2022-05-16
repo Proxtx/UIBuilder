@@ -25,16 +25,14 @@ export const loadComponent = async (options) => {
             }
           })();
 
-        import(options.component).then((component) => {
-          this.component = component;
-          component.handler.bind(this)({
+        import(options.component).then((componentImport) => {
+          this.component = new componentImport.Component({
             shadowDom: this.shadowRoot,
             component: this,
             document,
           });
 
           this.ready = true;
-          this.component = component;
           let event = new Event("ready", {
             bubbles: false,
             cancelable: false,
