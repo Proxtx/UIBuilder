@@ -25,8 +25,8 @@ export const loadComponent = async (options) => {
             }
           })();
 
-        import(options.component).then((componentImport) => {
-          this.component = new componentImport.Component({
+        import(options.component).then(async (componentImport) => {
+          this.component = await new componentImport.Component({
             shadowDom: this.shadowRoot,
             component: this,
             document,
