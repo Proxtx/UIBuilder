@@ -39,11 +39,27 @@ export const loadComponent = async (options) => {
           });
           this.dispatchEvent(event);
         });
+
+        let observer = new MutationObserver(
+          this.attributeChangedCallback.bind(this)
+        );
+        observer.observe(this, { attributeOldValue: true });
       }
 
-      attributeChangeCallback(name, oldValue, newValue) {
-        if (this.component && this.component.attributeChangeCallback)
-          this.component.attributeChangeCallback(name, oldValue, newValue);
+      attributeChangedCallback(mutations) {
+        for (let mutation of mutations) {
+          if (
+            mutation.type == "attributes" &&
+            this.component &&
+            this.component.attributeChangedCallback
+          ) {
+            this.component.attributeChangedCallback(
+              mutation.attributeName,
+              mutation.oldValue,
+              mutation.target.getAttribute(mutation.attributeName)
+            );
+          }
+        }
       }
     }
   );
