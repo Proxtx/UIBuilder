@@ -48,12 +48,8 @@ export const loadComponent = async (options) => {
 
       attributeChangedCallback(mutations) {
         for (let mutation of mutations) {
-          if (
-            mutation.type == "attributes" &&
-            this.component &&
-            this.component.attributeChangedCallback
-          ) {
-            this.component.attributeChangedCallback(
+          if (mutation.type == "attributes") {
+            this.component?.attributeChangedCallback?.(
               mutation.attributeName,
               mutation.oldValue,
               mutation.target.getAttribute(mutation.attributeName)
