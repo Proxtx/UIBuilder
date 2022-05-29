@@ -11,6 +11,10 @@ export const loadComponent = async (options) => {
 
       constructor() {
         super();
+        let loadQueueResolve;
+        window.uiBuilder.loadQueue.push(
+          new Promise((r) => (loadQueueResolve = r))
+        );
         let templateElement = document.createElement("template");
         templateElement.innerHTML = template;
 
@@ -42,6 +46,7 @@ export const loadComponent = async (options) => {
               cancelable: false,
             });
             this.dispatchEvent(event);
+            loadQueueResolve();
           }
         );
 
@@ -68,15 +73,19 @@ export const loadComponent = async (options) => {
 
 export const loadPack = async (packUrl, options) => {
   let pack = await (await fetch(packUrl)).json();
-  applyPack({ ...options, ...{ pack } });
+  await applyPack({ ...options, ...{ pack } });
 };
 
 export const applyPack = async (options) => {
   let components = options.pack.components;
+  let componentsAwait = [];
   for (let i of Object.keys(components)) {
+    componentsAwait.push(window.customElements.whenDefined(components[i].name));
     let component = components[i];
     await loadComponent({ ...options, ...component });
   }
+  await Promise.all(componentsAwait);
+  await Promise.all(uiBuilder.loadQueue);
 };
 
 export const ready = async (elem) => {
@@ -89,4 +98,5 @@ window.uiBuilder = {
   applyPack,
   loadPack,
   loadComponent,
+  loadQueue: [],
 };
