@@ -23,8 +23,8 @@ export const loadComponent = async (options) => {
               let link = document.createElement("link");
               link.type = "text/css";
               link.rel = "stylesheet";
-              link.href = i;
-              this.shadowRoot.appendChild(options.urlPrefix + link);
+              link.href = options.urlPrefix + i;
+              this.shadowRoot.appendChild(link);
             }
           })();
 
@@ -75,7 +75,7 @@ export const applyPack = async (options) => {
   let components = options.pack.components;
   for (let i of Object.keys(components)) {
     let component = components[i];
-    await loadComponent({ ...{ options }, ...component });
+    await loadComponent({ ...options, ...component });
   }
 };
 
