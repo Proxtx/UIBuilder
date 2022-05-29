@@ -1,5 +1,8 @@
 export const loadComponent = async (options) => {
-  let template = await (await fetch(options.template)).text();
+  !options.urlPrefix && (options.urlPrefix = "");
+  let template = await (
+    await fetch(options.urlPrefix + options.template)
+  ).text();
 
   customElements.define(
     options.name,
@@ -21,24 +24,26 @@ export const loadComponent = async (options) => {
               link.type = "text/css";
               link.rel = "stylesheet";
               link.href = i;
-              this.shadowRoot.appendChild(link);
+              this.shadowRoot.appendChild(options.urlPrefix + link);
             }
           })();
 
-        import(options.component).then(async (componentImport) => {
-          this.component = await new componentImport.Component({
-            shadowDom: this.shadowRoot,
-            component: this,
-            document,
-          });
+        import(options.urlPrefix + options.component).then(
+          async (componentImport) => {
+            this.component = await new componentImport.Component({
+              shadowDom: this.shadowRoot,
+              component: this,
+              document,
+            });
 
-          this.ready = true;
-          let event = new Event("ready", {
-            bubbles: false,
-            cancelable: false,
-          });
-          this.dispatchEvent(event);
-        });
+            this.ready = true;
+            let event = new Event("ready", {
+              bubbles: false,
+              cancelable: false,
+            });
+            this.dispatchEvent(event);
+          }
+        );
 
         let observer = new MutationObserver(
           this.attributeChangedCallback.bind(this)
