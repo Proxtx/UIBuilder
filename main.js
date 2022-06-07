@@ -4,6 +4,10 @@ export const loadComponent = async (options) => {
     await fetch(options.urlPrefix + options.template)
   ).text();
 
+  let styles = [];
+  for (let i of options.styles)
+    styles.push(await (await fetch(options.urlPrefix + i)).text());
+
   customElements.define(
     options.name,
     class extends HTMLElement {
@@ -23,12 +27,10 @@ export const loadComponent = async (options) => {
 
         if (options.styles)
           (async () => {
-            for (let i of options.styles) {
-              let link = document.createElement("link");
-              link.type = "text/css";
-              link.rel = "stylesheet";
-              link.href = options.urlPrefix + i;
-              this.shadowRoot.appendChild(link);
+            for (let i in options.styles) {
+              let style = document.createElement("style");
+              style.innerHTML = styles[i];
+              this.shadowRoot.appendChild(style);
             }
           })();
 
