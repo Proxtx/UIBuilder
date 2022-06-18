@@ -42,6 +42,8 @@ export const loadComponent = async (options) => {
               document,
             });
 
+            this.existingAttributeCallbackEmitter();
+
             this.ready = true;
             let event = new Event("ready", {
               bubbles: false,
@@ -56,9 +58,6 @@ export const loadComponent = async (options) => {
           this.attributeChangedCallback.bind(this)
         );
         observer.observe(this, { attributeOldValue: true });
-        for (let attribute of this.attributes)
-          this.attributeChangedCallback(attribute.name, null, attribute.value);
-        this.component?.attributeChangedCallback?.();
       }
 
       attributeChangedCallback(mutations) {
@@ -71,6 +70,15 @@ export const loadComponent = async (options) => {
             );
           }
         }
+      }
+
+      existingAttributeCallbackEmitter() {
+        for (let attribute of this.attributes)
+          this.component?.attributeChangedCallback?.(
+            attribute.name,
+            null,
+            attribute.value
+          );
       }
     }
   );
