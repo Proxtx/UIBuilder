@@ -56,6 +56,9 @@ export const loadComponent = async (options) => {
           this.attributeChangedCallback.bind(this)
         );
         observer.observe(this, { attributeOldValue: true });
+        for (let attribute of this.attributes)
+          this.attributeChangedCallback(attribute.name, null, attribute.value);
+        this.component?.attributeChangedCallback?.();
       }
 
       attributeChangedCallback(mutations) {
