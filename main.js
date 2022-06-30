@@ -91,6 +91,15 @@ export const loadPack = async (packUrl, options) => {
 
 export const applyPack = async (options) => {
   let components = options.pack.components;
+
+  if (options.customStyleSheets) {
+    for (let i of Object.keys(components)) {
+      components[i].styles = [
+        ...components[i].styles,
+        ...options.customStyleSheets,
+      ];
+    }
+  }
   let componentsAwait = [];
   for (let i of Object.keys(components)) {
     componentsAwait.push(window.customElements.whenDefined(components[i].name));
