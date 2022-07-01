@@ -151,7 +151,6 @@ const getFile = async (url, version) => {
   let cachedFile = loadFile(url);
   if (cachedFile.success && version && version == cachedFile.file.version)
     return cachedFile.file.data;
-  console.log("not cache");
   let text = await (await fetch(url)).text();
   saveFile(url, text, version);
   return text;
