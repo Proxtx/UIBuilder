@@ -1,12 +1,13 @@
 export const loadComponent = async (options) => {
   !options.urlPrefix && (options.urlPrefix = "");
-  let template = await (
-    await fetch(options.urlPrefix + options.template)
-  ).text();
+  let template = await getFile(
+    options.urlPrefix + options.template,
+    options.version
+  );
 
   let styles = [];
   for (let i of options.styles)
-    styles.push(await (await fetch(options.urlPrefix + i)).text());
+    styles.push(await getFile(options.urlPrefix + i, options.version));
 
   customElements.define(
     options.name,
@@ -92,6 +93,8 @@ export const loadPack = async (packUrl, options) => {
 export const applyPack = async (options) => {
   let components = options.pack.components;
 
+  options.version = options.pack.version;
+
   if (options.customStyleSheets) {
     for (let i of Object.keys(components)) {
       components[i].styles = [
@@ -121,4 +124,35 @@ window.uiBuilder = {
   loadPack,
   loadComponent,
   loadQueue: [],
+};
+
+const loadFile = (url) => {
+  let filesRaw = localStorage.getItem("files");
+  if (!filesRaw) return { success: false };
+  let files = JSON.parse(filesRaw);
+  if (!files[url]) {
+    return { success: false };
+  }
+  return { success: true, file: files[url] };
+};
+
+const saveFile = (url, data, version) => {
+  let filesRaw = localStorage.getItem("files");
+  if (!filesRaw) filesRaw = "{}";
+  let files = JSON.parse(filesRaw);
+  files[url] = {
+    data,
+    version,
+  };
+  localStorage.setItem("files", JSON.stringify(files));
+};
+
+const getFile = async (url, version) => {
+  let cachedFile = loadFile(url);
+  if (cachedFile.success && version && version == cachedFile.file.version)
+    return cachedFile.file.data;
+  console.log("not cache");
+  let text = await (await fetch(url)).text();
+  saveFile(url, text, version);
+  return text;
 };
