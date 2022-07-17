@@ -35,25 +35,26 @@ export const loadComponent = async (options) => {
             }
           })();
 
-        import(options.urlPrefix + options.component).then(
-          async (componentImport) => {
-            this.component = await new componentImport.Component({
-              shadowDom: this.shadowRoot,
-              component: this,
-              document,
-            });
+        import(
+          (options.importPrefix ? options.importPrefix : options.urlPrefix) +
+            options.component
+        ).then(async (componentImport) => {
+          this.component = await new componentImport.Component({
+            shadowDom: this.shadowRoot,
+            component: this,
+            document,
+          });
 
-            this.existingAttributeCallbackEmitter();
+          this.existingAttributeCallbackEmitter();
 
-            this.ready = true;
-            let event = new Event("ready", {
-              bubbles: false,
-              cancelable: false,
-            });
-            this.dispatchEvent(event);
-            loadQueueResolve();
-          }
-        );
+          this.ready = true;
+          let event = new Event("ready", {
+            bubbles: false,
+            cancelable: false,
+          });
+          this.dispatchEvent(event);
+          loadQueueResolve();
+        });
 
         let observer = new MutationObserver(
           this.attributeChangedCallback.bind(this)
