@@ -1,13 +1,29 @@
 export const loadComponent = async (options) => {
   !options.urlPrefix && (options.urlPrefix = "");
-  let template = await getFile(
-    options.urlPrefix + options.template,
-    options.version
+
+  let filePromises = [];
+  let template;
+  filePromises.push(
+    (async () => {
+      template = await getFile(
+        options.urlPrefix + options.template,
+        options.version
+      );
+    })()
   );
 
   let styles = [];
   for (let i of options.styles)
-    styles.push(await getFile(options.urlPrefix + i, options.version));
+    styles.push(getFile(options.urlPrefix + i, options.version));
+  filePromises.push(
+    (async () => {
+      for (let promiseIndex in styles) {
+        styles[promiseIndex] = await styles[promiseIndex];
+      }
+    })()
+  );
+
+  await Promise.all(filePromises);
 
   customElements.define(
     options.name,
@@ -96,6 +112,8 @@ export const applyPack = async (options) => {
 
   options.version = options.pack.version;
 
+  let componentLoadPromises = [];
+
   if (options.customStyleSheets) {
     for (let i of Object.keys(components)) {
       components[i].styles = [
@@ -108,8 +126,10 @@ export const applyPack = async (options) => {
   for (let i of Object.keys(components)) {
     componentsAwait.push(window.customElements.whenDefined(components[i].name));
     let component = components[i];
-    await loadComponent({ ...options, ...component });
+    componentLoadPromises.push(loadComponent({ ...options, ...component }));
   }
+
+  await Promise.all(componentLoadPromises);
   await Promise.all(componentsAwait);
   await Promise.all(uiBuilder.loadQueue);
 };
